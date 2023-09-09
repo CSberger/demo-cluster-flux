@@ -1,0 +1,250 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system
+      resources:
+        requests:
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule" 
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system   
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"      
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system   
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"        
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: source-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system   
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"    
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-automation-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system   
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"    
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-reflector-controller
+  namespace: flux-system
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - system   
+      securityContext:
+        runAsUser: 10000
+        fsGroup: 1337
+      
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "system"
+        effect: "NoSchedule"    
+      containers:
+        - name: manager
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL

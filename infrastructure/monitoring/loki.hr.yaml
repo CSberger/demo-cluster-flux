@@ -1,0 +1,60 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: monitoring
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: loki
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-manifests
+      interval: 1m
+
+  values:
+  
+    loki:
+      commonConfig:
+        replication_factor: 1
+      containerSecurityContext:
+        runAsGroup: 0
+        runAsNonRoot: false
+        runAsUser: 0
+      storage:
+        type: 'filesystem'
+    singleBinary:
+      initContainers:
+      - name: fix-permissions
+        image: busybox:latest
+        securityContext:
+          privileged: true
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        command:
+        - sh
+        - -c
+        - >-
+          id;
+          ls -la /data/;
+          mkdir -p /data/global/loki;
+          mkdir -p /data/loki;
+          chown 10001:10001 /data/loki
+
+          chown 10001:10001 /data/global/loki
+        volumeMounts:
+        - mountPath: /data
+          name: storage    
+      replicas: 1
+      persistence:
+        enabled: false
+      nodeSelector:
+        role: monitoring
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"      

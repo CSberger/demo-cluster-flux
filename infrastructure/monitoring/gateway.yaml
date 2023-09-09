@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grafana-gateway
+  namespace: monitoring
+spec:
+  selector:
+    app: istio-ingress
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTP
+    hosts:
+    - "grafana.sandcastle.work"
+    tls:
+      httpsRedirect: false  
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "grafana.sandcastle.work"
+    tls:
+      httpsRedirect: true

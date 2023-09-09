@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: autoscaler
+  namespace: autoscaler
+spec:
+  interval: 2m
+  chart:
+    spec:
+      chart: cluster-autoscaler
+      sourceRef:
+        kind: HelmRepository
+        name: cluster-autoscaler
+        namespace: flux-manifests
+      interval: 2m
+  values:
+    autoDiscovery:
+      clusterName: demo-cluster
+    awsRegion: us-west-2  
+    rbac:
+      serviceAccount:
+        annotations: 
+          "eks.amazonaws.com/role-arn": arn:aws:iam::652587639079:role/cluster-autoscaler-role
+    tolerations:
+    - key: "dedicated"
+      operator: Exists
+    nodeSelector:
+      role: system
+      

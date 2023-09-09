@@ -1,0 +1,102 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-manifests
+      interval: 1m
+
+  values:
+    alertmanager:
+      alertmanagerSpec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: storage
+                  operator: NotIn
+                  values:
+                  - "true"  
+        tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "NoSchedule"
+
+    grafana:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - monitoring
+      additionalDataSources:
+      - name: loki
+        jsonData:
+          tlsSkipVerify: true
+          httpHeaderName1: 'X-Scope-OrgID'
+        secureJsonData:
+          httpHeaderValue1: '1'
+        orgId: 1
+        type: loki
+        url: http://loki:3100
+        version: 1
+      admin:
+        existingSecret: "grafana-credentials"
+        userKey: adminUsername
+        passwordKey: adminPassword
+      service:
+        enabled: true
+
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
+    prometheus:
+      prometheusSpec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - monitoring
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+          requests:
+            cpu: 200m
+            memory: 1024Mi
+        tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "NoSchedule"
+    prometheusOperator:
+      admissionWebhooks:
+        patch:
+          podAnnotations:
+            sidecar.istio.io/inject: "false"

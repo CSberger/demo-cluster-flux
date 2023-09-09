@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilant-fe
+  namespace: ilant
+  labels:
+    app: ilant-fe
+spec:
+  selector:
+    matchLabels:
+      app: ilant-fe
+  template:
+    metadata:
+      labels:
+        app: ilant-fe
+    spec:
+      containers:
+        - name: ilant-fe
+          image: 652587639079.dkr.ecr.us-west-2.amazonaws.com/ilant-fe:5
+          ports:
+            - containerPort: 3000
+          env:
+          - name: BASE_URL
+            value: "http://ilant-be"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi

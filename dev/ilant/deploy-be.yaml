@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilant-be
+  namespace: ilant
+  labels:
+    app: ilant-be
+spec:
+  selector:
+    matchLabels:
+      app: ilant-be
+  template:
+    metadata:
+      labels:
+        app: ilant-be
+    spec:
+      containers:
+        - name: ilant-be
+          image: 652587639079.dkr.ecr.us-west-2.amazonaws.com/ilant-be:3
+          ports:
+            - containerPort: 8000
+          env:
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ilant-apikey
+                key: api_key
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /health
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 3

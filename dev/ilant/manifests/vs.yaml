@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ilant-be
+  namespace: ilant
+spec:
+  hosts:
+  - "ilant.sandcastle.work"
+  gateways:
+  - ilant-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api       
+    route:
+    - destination:
+        port:
+          number: 80
+        host: ilant-be
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ilant-fe
+  namespace: ilant
+spec:
+  hosts:
+  - "ilant.sandcastle.work"
+  gateways:
+  - ilant-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /      
+    route:
+    - destination:
+        port:
+          number: 80
+        host: ilant-fe

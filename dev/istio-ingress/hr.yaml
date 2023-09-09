@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-ingress
+  namespace: istio-ingress
+spec:
+  interval: 5m
+  dependsOn:
+    - name: istio-base
+      namespace: istio-system
+    - name: istiod
+      namespace: istio-system
+  chart:
+    spec:
+      chart: gateway
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-manifests
+      interval: 1m
+  values:
+    resources:
+      requests:
+        cpu: "1"
+        memory: 512Mi
+      limits:
+        cpu: 2000m
+        memory: 1024Mi      
+    labels:
+      app: istio-ingress
+      istio: ingressgateway
+    tolerations:
+    - key: "dedicated"
+      operator: Exists
+    nodeSelector:
+      role: worker
+    service:
+      annotations:
+        # Note that the backend talks over HTTP.
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+        # TODO: Fill in with the ARN of your certificate.
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-west-2:652587639079:certificate/304b2269-c2c4-4001-b062-a295e268ca29"
+        # Only run SSL on the port named "https" below.
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"      
+      loadBalancerSourceRanges:
+      - "192.145.118.99/32"

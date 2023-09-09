@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ilant-fe
+  namespace: ilant
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: ilant-fe
+  type: ClusterIP
+---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   name: ilant-fe
+#   namespace: ilant
+# spec:
+#   hosts:
+#   - "ilant.sandcastle.work"
+#   gateways:
+#   - ilant-gateway
+#   http:
+#   - match:
+#     - uri:
+#         prefix: /      
+#     route:
+#     - destination:
+#         port:
+#           number: 80
+#         host: ilant-fe

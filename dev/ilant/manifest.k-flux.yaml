@@ -1,0 +1,16 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: ilant-istio
+  namespace: ilant
+spec:
+  dependsOn:
+  - name: istio-mixer
+    namespace: istio-system
+  interval: 10m
+  path: ./dev/ilant/manifests
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
